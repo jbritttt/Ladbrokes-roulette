@@ -111,41 +111,15 @@ const puppeteer = require("puppeteer");
 
           setTimeout(run, 18000);
           return
+        }else{
+          doubleUpFunc()
         }
-
-
-        if (loseCount == 1) {
-          howManyTimesToDoubleBet = 2;
-          doubleUpFunc();
-        }
-
-        if (loseCount == 2) {
-          howManyTimesToDoubleBet = 3;
-          doubleUpFunc();
-        }
-
-        if (loseCount == 3) {
-          howManyTimesToDoubleBet = 4;
-          doubleUpFunc();
-        }
-
-        if (loseCount == 4) {
-          howManyTimesToDoubleBet = 5;
-          doubleUpFunc();
-        }
-
-        if (loseCount == 5) {
-          howManyTimesToDoubleBet = 6;
-          doubleUpFunc();
-        }
-
-        
-
 
     }
 
+    
 
-      let howManyTimesToDoubleBet = 0;
+      let howManyTimesToDoubleBet = loseCount + 1;
 
 
       async function doubleUpFunc() {
