@@ -31,12 +31,12 @@ const puppeteer = require("puppeteer");
 
 
                                 // Type UserName Below //
-    await page.type("#userId", " *username goes here* ");
+    await page.type("#userId", "Username goes here");
 
     await page.waitForSelector("[name='password']");
 
                                        // Type Password Below //
-    await page.type("[name='password']", " *Password goes here* ");
+    await page.type("[name='password']", 'Password goes here');
 
 
 
@@ -64,9 +64,18 @@ const puppeteer = require("puppeteer");
 
     setTimeout(run, 18000);
 
+   
+    let livePlay = false
 
     let loseCount = 0;
 
+    let howManyTimesWasFunctionCalled = 0
+
+    let yourAccountBalance = 17.2
+    yourAccountBalance = yourAccountBalance.toFixed()
+    
+
+    let possibleProfit = 0
 
     async function run() {
 
@@ -80,21 +89,37 @@ const puppeteer = require("puppeteer");
       });
 
 
-      if (loseCount == 6) {
-
+      if (loseCount == 4) {
+        console.log('You lose -£12.80')
+        yourAccountBalance = yourAccountBalance - 12.8
+            console.log(`Your total balance is £${yourAccountBalance}`)
           loseCount = 0;
       }
 
 
-      if (lastSpinResult > 24 || lastSpinResult == 0) {
+      if (lastSpinResult > 24 || lastSpinResult == 0 && howManyTimesWasFunctionCalled !== 0) {
           loseCount = loseCount + 1;
           placeBetFunc();
 
-      } else if (lastSpinResult < 25 && lastSpinResult !== 0) {
+      } else if (lastSpinResult < 25 && lastSpinResult !== 0 && loseCount > 0) {
+        console.log(`You Win ${possibleProfit}`)
+        yourAccountBalance = yourAccountBalance + possibleProfit
+        console.log(`Your total balance is £${yourAccountBalance}`)
           loseCount = 0;
           placeBetFunc();
 
+      }else if (lastSpinResult < 25 && lastSpinResult !== 0) {
+        loseCount = 0;
+        placeBetFunc();
       }
+
+      if(loseCount == 0 && howManyTimesWasFunctionCalled !== 0 ){
+
+        console.log(`You Win ${possibleProfit}`)
+        yourAccountBalance = yourAccountBalance + possibleProfit
+        console.log(`Your total balance is £${yourAccountBalance}`)
+       }
+
 
     async function placeBetFunc() {
         await framesAll.waitForSelector('[data-automation-locator="betPlace.dozen-2nd12"]');
@@ -109,33 +134,94 @@ const puppeteer = require("puppeteer");
 
         if(loseCount == 0){
 
+          console.log('Bet placed £0.40')
+          possibleProfit = .2
           setTimeout(run, 18000);
-          return
-        }else{
-          doubleUpFunc()
+          
+          
         }
 
+        howManyTimesWasFunctionCalled = howManyTimesWasFunctionCalled + 1
+
+
+          if (loseCount == 1) {
+            yourAccountBalance = yourAccountBalance - .4
+            console.log('You lose -£0.40')
+            console.log(`Your total balance is £${yourAccountBalance}`)
+            console.log('We will now bet £0.80 to recover lose')
+            possibleProfit = 0.4
+            howManyTimesToDoubleBet = 1;
+            doubleUpFunc();
+          }
+  
+          if (loseCount == 2) {
+            yourAccountBalance = yourAccountBalance - .8
+            console.log('You lose -£0.80')
+            console.log(`Your total balance is £${yourAccountBalance}`)
+            console.log('We will now bet £3.20 to recover lose')
+            possibleProfit = 1.6
+            howManyTimesToDoubleBet = 3;
+            doubleUpFunc();
+          }
+  
+          if (loseCount == 3) {
+            yourAccountBalance = yourAccountBalance - 3.2
+            console.log('You lose -£3.20')
+            console.log(`Your total balance is £${yourAccountBalance}`)
+            console.log('We will now bet £12.80 to recover lose')
+            possibleProfit = 6.4
+            howManyTimesToDoubleBet = 5;
+            doubleUpFunc();
+          }
+  
     }
 
-    
 
-      let howManyTimesToDoubleBet = loseCount + 1;
 
+        let howManyTimesToDoubleBet = 0;
+
+        let howManyTimesDoubleUpFuncWasCalled = 0
 
       async function doubleUpFunc() {
+
+        howManyTimesDoubleUpFuncWasCalled = howManyTimesDoubleUpFuncWasCalled + 1
 
         await framesAll.waitForSelector('[data-automation-locator="button.Double"]');
         await framesAll.click('[data-automation-locator="button.Double"]');
 
-        if (howManyTimesToDoubleBet > 0) {
+        if (howManyTimesToDoubleBet > 1) {
 
-          howManyTimesToDoubleBet = howManyTimesToDoubleBet - 1;
+         howManyTimesToDoubleBet = howManyTimesToDoubleBet - 1;
           doubleUpFunc();
+          return
+        } 
+          if(livePlay == true && howManyTimesToDoubleBet == 0){
 
-        } else {
+            howManyTimesDoubleUpFuncWasCalled = 0
           setTimeout(run, 18000);
+        }else{
+          removeAllBets()
         }
       }
+
+
+
+      async function removeAllBets(){
+
+        await framesAll.waitForSelector('[undo"]');
+        await framesAll.click('[undo"]');
+        if (howManyTimesDoubleUpFuncWasCalled > 1) {
+
+        howManyTimesDoubleUpFuncWasCalled = howManyTimesDoubleUpFuncWasCalled - 1
+        removeAllBets()
+
+       }else{
+        setTimeout(run, 18000);
+
+       }
+
+     }
+
     }
   }
 })();
