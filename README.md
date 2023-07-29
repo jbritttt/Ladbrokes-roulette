@@ -1,3 +1,3 @@
 # Ladbrokes-roulette
-## In progress/almost complete
-## An application that I've built that logs into ladbrokes and plays roulette based on a popular roulette strategy
+## Working App / almost complete
+## A fully automated app I built that logs into your ladbrokes account and plays roulette based on a popular roulette strategy
